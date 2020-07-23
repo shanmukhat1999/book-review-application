@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hello</title>
+    </head>
+    <body>
+        <h1>Books</h1>
+        <hr>
+        <ul>
+            {% for i in b %}
+            <li><a href="{{ url_for('book',isbn=i.isbn) }}">{{ i.title }}</a></li>
+            {% endfor %}
+        </ul>
+        <hr>
+        {% if t == 1 %}
+        <a href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+        {% if t == 0 %}
+        <a href="{{ url_for('index') }}">Login</a>
+        {% endif %}
+    </body>
+</html>

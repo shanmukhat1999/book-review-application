@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hello</title>
+        <script src="{{ url_for('static', filename='book.js') }}"></script>
+    </head>
+    <body>
+        <ul>
+            <li>title          : {{book.title}}</li>
+            <li>isbn           : {{book.isbn}}</li>
+            <li>author         : {{book.author}}</li>
+            <li>year           : {{book.year}}</li>
+            <li>Average rating : {{rating}}</li>
+        </ul>
+        <hr>
+        <div>
+            <h3>Reviews</h3>
+            {% if r %}
+            {% for i in r %}
+            {% if (i.review)|length >0 %}
+            <li>{{i.username}}  :  {{i.review}}</li>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+        </div>
+        <hr>
+        <form method="POST" action="{{url_for('book',isbn=book.isbn)}}">
+            Give your rating ( You can rate and review only ones )
+            <select name="rating">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            <input name="review" type="text" placeholder="enter your review ( optional )">
+            <button>submit</button>
+        </form>
+        <hr>
+        <a href="{{ url_for('search') }}">Go to search page</a>
+        <hr>
+        <a href="{{url_for('logout')}}">Logout</a>
+        <input type="hidden" id="refresh" value="no">
+    </body>
+</html>

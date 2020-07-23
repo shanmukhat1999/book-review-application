@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hello</title>
+    </head>
+    <body>
+        <ul>
+            <li>title          : {{book.title}}</li>
+            <li>isbn           : {{book.isbn}}</li>
+            <li>author         : {{book.author}}</li>
+            <li>year           : {{book.year}}</li>
+            <li>Average rating : {{rating}}</li>
+        </ul>
+        <hr>
+        <div>
+            <h3>Reviews</h3>
+            {% if r %}
+            {% for i in r %}
+            {% if (i.review)|length >0 %}
+            <li>{{i.username}}  :  {{i.review}}</li>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+        </div>
+        <hr>
+        <h3>You have already rated</h3>
+        <hr>
+        <a href="{{ url_for('search') }}">Go to search page</a>
+        <hr>
+        <a href="{{url_for('logout')}}">Logout</a>
+    </body>
+</html>

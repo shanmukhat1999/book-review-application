@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hello</title>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                if(!(sessionStorage.length === 0))
+                {
+                    var n;
+                    for (n in sessionStorage)
+                    {
+                        if(!(sessionStorage.getItem(n) === null))
+                        {
+                            var l=document.createElement('li');
+                            l.innerHTML=`<a href="/book/${n}">${sessionStorage.getItem(n)}</a>`;
+                            document.querySelector('ul').append(l);
+                        }
+                        
+                    }
+                }
+                document.querySelector('button').onclick = () => {
+                    sessionStorage.clear();
+                    while (document.querySelector('ul').hasChildNodes()) {  
+                        document.querySelector('ul').removeChild(document.querySelector('ul').firstChild);
+                    }
+                    const request = new XMLHttpRequest();
+                    request.open('POST', '/books');
+                    request.onload = () => {
+                        var data = JSON.parse(request.responseText);
+                        var x;
+                        for(x in data)
+                        {
+                            var li=document.createElement('li');
+                            li.innerHTML=`<a href="/book/${x}">${data[x]}</a>`;
+                            document.querySelector('ul').append(li);
+                            sessionStorage.setItem(x,data[x]);
+                        }
+                    };
+
+                    // Add start and end points to request data.
+                    var title=document.querySelector('#title').value;
+                    var isbn=document.querySelector('#isbn').value;
+                    var author=document.querySelector('#author').value;
+
+                    var p = new FormData();
+                    p.append('title', title);
+                    p.append('isbn', isbn);
+                    p.append('author',author);
+
+                    // Send request.
+                    request.send(p);
+                    }
+            });
+        </script>
+    </head>
+    <body>
+        <h1>Search</h1>
+        <div>
+            <input id="title" name="title" type="text" placeholder="enter title of book">
+            <input id="isbn" name="isbn" type="text" placeholder="enter isbn number">
+            <input id="author" name="author" type="text" placeholder="enter author name">
+            <button>submit</button>
+        </div>
+        <hr>
+        <ul>
+        </ul>
+        <hr>
+        {% if t == 1 %}
+        <a href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+        {% if t == 0 %}
+        <a href="{{ url_for('index') }}">Login</a>
+        {% endif %}
+    </body>
+</html>
