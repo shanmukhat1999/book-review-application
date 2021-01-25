@@ -4,6 +4,8 @@ from flask import Flask, render_template, session, request, redirect, url_for, j
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 # configuring session to use filesystem
@@ -139,10 +141,4 @@ def api(isbn):
     })     
 
 if __name__ == "__main__":
-    app.run(debug=True)             
-
-
-
-                
-
-
+    app.run(debug=True)          
