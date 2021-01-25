@@ -20,14 +20,13 @@
                 }
                 document.querySelector('button').onclick = () => {
                     sessionStorage.clear();
-                    while (document.querySelector('ul').hasChildNodes()) {  
-                        document.querySelector('ul').removeChild(document.querySelector('ul').firstChild);
-                    }
+                    document.querySelector('ul').innerHTML="";
                     const request = new XMLHttpRequest();
                     request.open('POST', '/books');
                     request.onload = () => {
                         var data = JSON.parse(request.responseText);
                         var x;
+                        document.querySelector('ul').innerHTML="";
                         for(x in data)
                         {
                             var li=document.createElement('li');
@@ -37,7 +36,7 @@
                         }
                     };
 
-                    // Add start and end points to request data.
+                    
                     var title=document.querySelector('#title').value;
                     var isbn=document.querySelector('#isbn').value;
                     var author=document.querySelector('#author').value;
