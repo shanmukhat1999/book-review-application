@@ -18,6 +18,14 @@
                         
                     }
                 }
+                document.querySelectorAll(".input_field").forEach(element => {
+                    element.addEventListener("keyup", function(event) {
+                        if (event.keyCode === 13) {
+                            event.preventDefault();
+                            document.querySelector('button').click();
+                        }
+                    });
+                });
                 document.querySelector('button').onclick = () => {
                     sessionStorage.clear();
                     document.querySelector('ul').innerHTML="";
@@ -55,9 +63,9 @@
     <body>
         <h1>Search</h1>
         <div>
-            <input id="title" name="title" type="text" placeholder="enter title of book">
-            <input id="isbn" name="isbn" type="text" placeholder="enter isbn number">
-            <input id="author" name="author" type="text" placeholder="enter author name">
+            <input id="title" class="input_field" name="title" type="text" placeholder="enter title of book">
+            <input id="isbn" class="input_field" name="isbn" type="text" placeholder="enter isbn number">
+            <input id="author" class="input_field" name="author" type="text" placeholder="enter author name">
             <button>submit</button>
         </div>
         <hr>
