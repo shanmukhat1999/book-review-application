@@ -30,6 +30,11 @@ def index():
         return redirect(url_for('search'))            
     return render_template("index.html")
 
+@app.route("/search1",methods=["GET"])
+def search1():
+    if "username" in session:
+        session.pop("username")
+    return redirect(url_for('search'))
 
 @app.route("/search",methods=["GET","POST"])
 def search():
@@ -113,7 +118,8 @@ def book(isbn):
 
 @app.route("/logout")
 def logout():
-    session.pop("username")
+    if "username" in session:
+        session.pop("username")
     return redirect(url_for('index')) 
 
 @app.route("/api/<string:isbn>")
