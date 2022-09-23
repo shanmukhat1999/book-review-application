@@ -77,18 +77,17 @@ def search():
 
 @app.route("/books",methods=["POST"])
 def books():
-    print("yes")
-    titleChars=request.form.get("title")
-    isbnChars=request.form.get("isbn")
-    authorChars=request.form.get("author")
-    allTitles=db.execute("SELECT title FROM books WHERE author iLIKE '%"+authorChars+"%' and title iLIKE '%"+titleChars+"%' and isbn iLIKE '%"+isbnChars+"%'").fetchall()
-    allISBNs=db.execute("SELECT isbn FROM books WHERE author iLIKE '%"+authorChars+"%' and title iLIKE '%"+titleChars+"%' and isbn iLIKE '%"+isbnChars+"%'").fetchall()
+    titleChars = request.form.get("title")
+    isbnChars = request.form.get("isbn")
+    authorChars = request.form.get("author")
+    allTitles = db.execute("SELECT title FROM books WHERE author iLIKE '%"+authorChars+"%' and title iLIKE '%"+titleChars+"%' and isbn iLIKE '%"+isbnChars+"%'").fetchall()
+    allISBNs = db.execute("SELECT isbn FROM books WHERE author iLIKE '%"+authorChars+"%' and title iLIKE '%"+titleChars+"%' and isbn iLIKE '%"+isbnChars+"%'").fetchall()
 
     d = {}
     for j in range(0,len(allTitles)):
-        isbn=allISBNs[j][0]
-        title=allTitles[j][0]
-        d[isbn]=title
+        isbn = allISBNs[j][0]
+        title = allTitles[j][0]
+        d[isbn] = title
 
     return jsonify(d)
 
@@ -102,19 +101,21 @@ def book(isbn):
         book = db.execute("select * from books where isbn=:isbn",{"isbn":isbn}).fetchone()
         avgRating = db.execute("select avg(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
         reviews = db.execute("select * from reviews where isbn=:isbn",{"isbn":isbn}).fetchall()
-        if avgRating[0] is not None:
-            avgRating=float(avgRating[0])        
+        avgRating = avgRating[0]
+        if avgRating is not None:
+            avgRating = float(avgRating)        
         if db.execute("select * from reviews where username=:username and isbn=:isbn",{"username":username,"isbn":isbn}).fetchone() is not None:
             return render_template("book2.html",book=book,rating=avgRating,reviews=reviews)
-        db.execute("insert into reviews (username,isbn,rating,review) values (:username,:isbn,:rating,:review)",{"username":username, "isbn":isbn, "rating":userRating, "review":userReview})
+        db.execute("insert into reviews (username,isbn,rating,review) values (:username,:isbn,:rating,:review)",{"username":username,"isbn":isbn,"rating":userRating,"review":userReview})
         db.commit() 
 
     book = db.execute("select * from books where isbn=:isbn",{"isbn":isbn}).fetchone()
     avgRating = db.execute("select avg(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
     reviews = db.execute("select * from reviews where isbn=:isbn",{"isbn":isbn}).fetchall()
 
-    if avgRating[0] is not None:
-        avgRating = float(avgRating[0])
+    avgRating = avgRating[0]
+    if avgRating is not None:
+        avgRating = float(avgRating)
 
     if "username" not in session:
         return render_template("book1.html",book=book,rating=avgRating,reviews=reviews)
@@ -133,17 +134,19 @@ def logout():
 
 @app.route("/api/<string:isbn>")
 def api(isbn):
-    book=db.execute("select * from books where isbn=:isbn",{"isbn":isbn}).fetchone()
+    book = db.execute("select * from books where isbn=:isbn",{"isbn":isbn}).fetchone()
     if book is None:
         return jsonify({"error": "Invalid"}), 404    
-    numOfReviews=db.execute("select count(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
-    if numOfReviews[0] is not None:
-        numOfReviews = int(numOfReviews[0]) 
+    numOfReviews = db.execute("select count(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
+    numOfReviews = numOfReviews[0]
+    if numOfReviews is not None:
+        numOfReviews = int(numOfReviews) 
     else:
         numOfReviews = 0
-    avgRating=db.execute("select avg(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
-    if avgRating[0] is not None:
-        avgRating = float(avgRating[0])
+    avgRating = db.execute("select avg(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
+    avgRating = avgRating[0]
+    if avgRating is not None:
+        avgRating = float(avgRating)
     return jsonify({
         "isbn": book.isbn,
         "title": book.title,
