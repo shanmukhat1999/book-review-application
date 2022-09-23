@@ -40,11 +40,15 @@ def search1():
 def search():
     if request.method == "GET":
         if "username" in session:
-            return render_template("search.html",loggedIn = 1)
-        return render_template("search.html",loggedIn = 0)
+            return render_template("search.html",loggedIn=1)
+        return render_template("search.html",loggedIn=0)
     else:
         username = request.form.get("username")
         password = request.form.get("password")
+
+        if (username is None) or (password is None):
+            return render_template("error.html",message="Username and Password should not be blank")
+
         if "name" in request.form:
             usersWithSelectedUsername = db.execute("select * from users where username=:username",{"username":username}).fetchall()
             if len(usersWithSelectedUsername) != 0:
@@ -52,15 +56,23 @@ def search():
             name = request.form.get("name")
             age = request.form.get("age")
             phone = request.form.get("phone")
+
+            if name is None:
+                return render_template("error.html",message="Name should not be blank")
+            if age is None:
+                return render_template("error.html",message="Age should not be blank")
+            if phone is None:
+                return render_template("error.html",message="Phone number should not be blank")        
+
             db.execute("insert into users (name,age,phone,username,password) values (:name,:age,:phone,:username,:password)",{"name":name,"age":age,"phone":phone,"username":username,"password":password}) 
             db.commit()   
-            session["username"]=username
+            session["username"] = username
         else:
             user = db.execute("select * from users where username=:username and password=:password",{"username":username,"password":password}).fetchall()
             if len(user) == 0:
                 return render_template("error.html",message="wrong username or password")
-            session["username"]=username
-    return render_template("search.html", loggedIn = 1)
+            session["username"] = username
+    return render_template("search.html",loggedIn=1)
 
 
 @app.route("/books",methods=["POST"])
@@ -105,12 +117,12 @@ def book(isbn):
         avgRating = float(avgRating)
 
     if "username" not in session:
-        return render_template("book1.html",book = book, rating = avgRating, reviews = reviews)
+        return render_template("book1.html",book=book,rating=avgRating,reviews=reviews)
     username = session["username"]
     if db.execute("select * from reviews where username=:username and isbn=:isbn",{"username":username,"isbn":isbn}).fetchone() is not None:
-        return render_template("book2.html",book = book, rating = avgRating, reviews = reviews)
+        return render_template("book2.html",book=book,rating=avgRating,reviews=reviews)
     
-    return render_template("book.html",book = book, rating = avgRating, reviews = reviews)
+    return render_template("book.html",book=book,rating=avgRating,reviews=reviews)
     
 
 @app.route("/logout")
