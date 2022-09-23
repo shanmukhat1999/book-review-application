@@ -5,14 +5,12 @@
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 if(!(sessionStorage.length === 0)) {
-                    var n;
-                    for (n in sessionStorage) {
-                        if(!(sessionStorage.getItem(n) === null)) {
+                    for (var isbn in sessionStorage) {
+                        if(!(sessionStorage.getItem(isbn) === null)) {
                             var l = document.createElement('li');
-                            l.innerHTML = `<a href="/book/${n}">${sessionStorage.getItem(n)}</a>`;
+                            l.innerHTML = `<a href="/book/${isbn}">${sessionStorage.getItem(isbn)}</a>`;
                             document.querySelector('ul').append(l);
                         }
-                        
                     }
                 }
                 document.querySelectorAll(".input_field").forEach(element => {
@@ -29,13 +27,13 @@
                     const request = new XMLHttpRequest();
                     request.open('POST', '/books');
                     request.onload = () => {
-                        var data = JSON.parse(request.responseText);
+                        var response = JSON.parse(request.responseText);
                         document.querySelector('ul').innerHTML = "";
-                        for(var x in data) {
+                        for(var isbn in response) {
                             var li = document.createElement('li');
-                            li.innerHTML = `<a href="/book/${x}">${data[x]}</a>`;
+                            li.innerHTML = `<a href="/book/${isbn}">${response[isbn]}</a>`;
                             document.querySelector('ul').append(li);
-                            sessionStorage.setItem(x, data[x]);
+                            sessionStorage.setItem(isbn, response[isbn]);
                         }
                     };
 
@@ -44,12 +42,12 @@
                     var isbn = document.querySelector('#isbn').value;
                     var author = document.querySelector('#author').value;
 
-                    var p = new FormData();
-                    p.append('title', title);
-                    p.append('isbn', isbn);
-                    p.append('author',author);
+                    var requestForm = new FormData();
+                    requestForm.append('title', title);
+                    requestForm.append('isbn', isbn);
+                    requestForm.append('author',author);
 
-                    request.send(p);
+                    request.send(requestForm);
                 }
             });
         </script>

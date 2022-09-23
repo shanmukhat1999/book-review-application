@@ -10,7 +10,7 @@ User Guide (Google chrome is suggested website):
 3. After logging in you will be directed to the search page. There you can search for books, by providing a substring of Title or ISBN or Author name (For Example: if you enter "ada" in Title, then all the books which contain "ada" in their title will be displayed).
 4. After the book names are displayed based on your search, then you can click on any of the book, to view its details and feedback.
 5. After you enter specific book page, details of the book along with feedback from other users (if any) can be found. If you are logged in then you can see the options to provide review and rating for that book but, feedback can be provided only once, you cannot find the options to review and rate after submitting once.
-6. If you close the browser while using the website after logging in, your session will be stored in the local storage of the browser and you need not login again when you come back to the website. You can use logout option for logging out.
+6. You can use logout option for logging out.
 
 
 Future Improvements:
