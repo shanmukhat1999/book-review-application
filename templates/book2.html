@@ -1,31 +1,40 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Hello</title>
+        <title>{{book.title}}</title>
     </head>
     <body>
-        <ul>
-            <li>title          : {{book.title}}</li>
-            <li>isbn           : {{book.isbn}}</li>
-            <li>author         : {{book.author}}</li>
-            <li>year           : {{book.year}}</li>
-            <li>Average rating : {{rating}}</li>
-        </ul>
+        <table>
+            <thead>
+                <th>Title</th>
+                <th>ISBN</th>
+                <th>Author</th>
+                <th>Published In</th>
+                <th>Avg Rating</th>
+            </thead>
+            <tbody>
+                <td>{{book.title}}</td>
+                <td>{{book.isbn}}</td>
+                <td>{{book.author}}</td>
+                <td>{{book.year}}</td>
+                <td>{{rating}}</td>
+            </tbody>
+        </table>
         <hr>
         <div>
             <h3>Reviews</h3>
-            {% if r %}
-            {% for i in r %}
-            {% if (i.review)|length >0 %}
-            <li>{{i.username}}  :  {{i.review}}</li>
+            {% if reviews %}
+            {% for i in reviews %}
+            {% if (i.review)|length > 0 %}
+            <li><b>{{i.username}}</b>  :  {{i.review}}</li>
             {% endif %}
             {% endfor %}
             {% endif %}
         </div>
         <hr>
-        <h3>You have already rated</h3>
+        <h3>You have already provided feedback for this book</h3>
         <hr>
-        <a href="{{ url_for('search') }}">Go to search page</a>
+        <a href="{{ url_for('search') }}">Go to Search Page</a>
         <hr>
         <a href="{{url_for('logout')}}">Logout</a>
     </body>

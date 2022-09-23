@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Hello</title>
+        <title>Welcome</title>
     </head>
     <body>
         <h1>Register</h1>
         <form id="register" action="{{ url_for('search') }}" method="POST">
-            <input name="name" type="text" placeholder="enter name">
-            <input name="age" type="number" placeholder="enter age">
-            <input name="phone" type="text" placeholder="enter phone">
-            <input name="username" type="text" placeholder="enter username">
-            <input name="password" type="password" placeholder="enter password">
-            <button>submit</button>
+            <input name="name" type="text" placeholder="Enter Name">
+            <input name="age" type="number" placeholder="Enter Age">
+            <input name="phone" type="text" placeholder="Enter Phone Number">
+            <br>
+            <input name="username" type="text" placeholder="Enter Username">
+            <input name="password" type="password" placeholder="Enter Password">
+            <br>
+            <button>Submit</button>
         </form>
         <hr>
-        <h3>If you are already a member then login</h3>
+        <h3>If you have already registered, please login below</h3>
         <form id="login" action="{{ url_for('search') }}" method="POST">
-            <input name="username" type="text" placeholder="enter username">
-            <input name="password" type="password" placeholder="enter password">
-            <button>submit</button>
+            <input name="username" type="text" placeholder="Enter Username">
+            <input name="password" type="password" placeholder="Enter Password">
+            <br>
+            <button>Submit</button>
         </form>
         <hr>
-        <a href="{{url_for('search1')}}">enter without login</a>
+        <a href="{{url_for('search1')}}">Proceed Without Login</a>
     </body>
 </html>

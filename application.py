@@ -27,7 +27,7 @@ db = scoped_session(sessionmaker(bind=engine))
 @app.route("/")
 def index():
     if "username" in session:
-        return redirect(url_for('search'))            
+        return redirect(url_for('search'))
     return render_template("index.html")
 
 @app.route("/search1",methods=["GET"])
@@ -40,80 +40,77 @@ def search1():
 def search():
     if request.method == "GET":
         if "username" in session:
-            return render_template("search.html",t=1)
-        return render_template("search.html",t=0)      
+            return render_template("search.html",loggedIn = 1)
+        return render_template("search.html",loggedIn = 0)
     else:
-        username=request.form.get("username")
-        password=request.form.get("password")
+        username = request.form.get("username")
+        password = request.form.get("password")
         if "name" in request.form:
-            k=db.execute("select * from users where username=:username",{"username":username}).fetchall()
-            name=request.form.get("name")
-            age=request.form.get("age")
-            phone=request.form.get("phone")
-            if len(k) != 0:
-                return render_template("error.html",message="choose another username")
+            usersWithSelectedUsername = db.execute("select * from users where username=:username",{"username":username}).fetchall()
+            if len(usersWithSelectedUsername) != 0:
+                return render_template("error.html",message="Username already exists")
+            name = request.form.get("name")
+            age = request.form.get("age")
+            phone = request.form.get("phone")
             db.execute("insert into users (name,age,phone,username,password) values (:name,:age,:phone,:username,:password)",{"name":name,"age":age,"phone":phone,"username":username,"password":password}) 
             db.commit()   
             session["username"]=username
         else:
-            p=db.execute("select * from users where username=:username and password=:password",{"username":username,"password":password}).fetchall()
-            if len(p) == 0:
+            user = db.execute("select * from users where username=:username and password=:password",{"username":username,"password":password}).fetchall()
+            if len(user) == 0:
                 return render_template("error.html",message="wrong username or password")
-            session["username"]=username 
-    return render_template("search.html",t=1)   
+            session["username"]=username
+    return render_template("search.html", loggedIn = 1)
 
 
 @app.route("/books",methods=["POST"])
 def books():
     print("yes")
-    title=request.form.get("title")
-    isbn=request.form.get("isbn")
-    author=request.form.get("author")
-    t=db.execute("SELECT title FROM books WHERE author iLIKE '%"+author+"%' and title iLIKE '%"+title+"%' and isbn iLIKE '%"+isbn+"%'").fetchall()
-    i=db.execute("SELECT isbn FROM books WHERE author iLIKE '%"+author+"%' and title iLIKE '%"+title+"%' and isbn iLIKE '%"+isbn+"%'").fetchall()
+    titleChars=request.form.get("title")
+    isbnChars=request.form.get("isbn")
+    authorChars=request.form.get("author")
+    allTitles=db.execute("SELECT title FROM books WHERE author iLIKE '%"+authorChars+"%' and title iLIKE '%"+titleChars+"%' and isbn iLIKE '%"+isbnChars+"%'").fetchall()
+    allISBNs=db.execute("SELECT isbn FROM books WHERE author iLIKE '%"+authorChars+"%' and title iLIKE '%"+titleChars+"%' and isbn iLIKE '%"+isbnChars+"%'").fetchall()
 
     d = {}
-    for j in range(0,len(t)):
-        r=i[j][0]
-        s=t[j][0]
-        d[r]=s
-    return jsonify(d)   
+    for j in range(0,len(allTitles)):
+        isbn=allISBNs[j][0]
+        title=allTitles[j][0]
+        d[isbn]=title
+
+    return jsonify(d)
 
 
 @app.route("/book/<string:isbn>",methods=["GET","POST"])
 def book(isbn):
     if request.method == "POST":
-        username=session["username"]
-        rate=request.form.get("rating")
-        review=request.form.get("review")
-        k=db.execute("select * from books where isbn=:isbn",{"isbn":isbn}).fetchone()
-        rating=db.execute("select avg(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
-        r=db.execute("select * from reviews where isbn=:isbn",{"isbn":isbn}).fetchall()
-        q=rating[0]
-        if q is not None:
-            q=float(q)
-        s=db.execute("select * from reviews where username=:username and isbn=:isbn",{"username":username,"isbn":isbn}).fetchone()        
-        if s is not None:
-            return render_template("book2.html",book=k,rating=q,r=r)
-        db.execute("insert into reviews (username,isbn,rating,review) values (:username,:isbn,:rating,:review)",{"username":username,"isbn":isbn,"rating":rate,"review":review})
+        username = session["username"]
+        userRating = request.form.get("rating")
+        userReview = request.form.get("review")
+        book = db.execute("select * from books where isbn=:isbn",{"isbn":isbn}).fetchone()
+        avgRating = db.execute("select avg(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
+        reviews = db.execute("select * from reviews where isbn=:isbn",{"isbn":isbn}).fetchall()
+        if avgRating[0] is not None:
+            avgRating=float(avgRating)        
+        if db.execute("select * from reviews where username=:username and isbn=:isbn",{"username":username,"isbn":isbn}).fetchone() is not None:
+            return render_template("book2.html",book = book,rating = avgRating,reviews = reviews)
+        db.execute("insert into reviews (username,isbn,rating,review) values (:username,:isbn,:rating,:review)",{"username":username, "isbn":isbn, "rating":userRating, "review":userReview})
         db.commit() 
 
-    k=db.execute("select * from books where isbn=:isbn",{"isbn":isbn}).fetchone()
-    rating=db.execute("select avg(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
-    r=db.execute("select * from reviews where isbn=:isbn",{"isbn":isbn}).fetchall()
+    book = db.execute("select * from books where isbn=:isbn",{"isbn":isbn}).fetchone()
+    avgRating = db.execute("select avg(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
+    reviews = db.execute("select * from reviews where isbn=:isbn",{"isbn":isbn}).fetchall()
 
-    q=rating[0]
-    if q is not None:
-        q=float(q)
+    if avgRating[0] is not None:
+        avgRating = float(avgRating)
 
     if "username" not in session:
-        return render_template("book1.html",book=k,rating=q,r=r)
-    username=session["username"] 
-    s=db.execute("select * from reviews where username=:username and isbn=:isbn",{"username":username,"isbn":isbn}).fetchone()        
-    if s is not None:
-        return render_template("book2.html",book=k,rating=q,r=r)
+        return render_template("book1.html",book = book, rating = avgRating, reviews = reviews)
+    username = session["username"]
+    if db.execute("select * from reviews where username=:username and isbn=:isbn",{"username":username,"isbn":isbn}).fetchone() is not None:
+        return render_template("book2.html",book = book, rating = avgRating, reviews = reviews)
     
-    return render_template("book.html",book=k,rating=q,r=r)    
+    return render_template("book.html",book = book, rating = avgRating, reviews = reviews)
     
 
 @app.route("/logout")
@@ -124,26 +121,24 @@ def logout():
 
 @app.route("/api/<string:isbn>")
 def api(isbn):
-    n=db.execute("select * from books where isbn=:isbn",{"isbn":isbn}).fetchone()
-    if n is None:
+    book=db.execute("select * from books where isbn=:isbn",{"isbn":isbn}).fetchone()
+    if book is None:
         return jsonify({"error": "Invalid"}), 404    
-    count=db.execute("select count(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
-    count=count[0]
-    if count is not None:
-        count=int(count) 
+    numOfReviews=db.execute("select count(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
+    if numOfReviews[0] is not None:
+        numOfReviews = int(numOfReviews) 
     else:
-        count=0    
-    s=db.execute("select avg(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
-    q=s[0]
-    if q is not None:
-        q=float(q)
+        numOfReviews = 0
+    avgRating=db.execute("select avg(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
+    if avgRating[0] is not None:
+        avgRating = float(avgRating)
     return jsonify({
-        "isbn":n.isbn,
-        "title":n.title,
-        "author":n.author,
-        "year":n.year,
-        "review count":count,
-        "average rating":q
+        "isbn": book.isbn,
+        "title": book.title,
+        "author": book.author,
+        "year": book.year,
+        "number of reviews": numOfReviews,
+        "average rating": avgRating
     })     
 
 if __name__ == "__main__":

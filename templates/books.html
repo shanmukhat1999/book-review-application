@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Hello</title>
+        <title>Books</title>
     </head>
     <body>
         <h1>Books</h1>
@@ -12,10 +12,10 @@
             {% endfor %}
         </ul>
         <hr>
-        {% if t == 1 %}
+        {% if loggedIn == 1 %}
         <a href="{{ url_for('logout') }}">Logout</a>
         {% endif %}
-        {% if t == 0 %}
+        {% if loggedIn == 0 %}
         <a href="{{ url_for('index') }}">Login</a>
         {% endif %}
     </body>
