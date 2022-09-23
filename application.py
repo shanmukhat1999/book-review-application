@@ -103,9 +103,9 @@ def book(isbn):
         avgRating = db.execute("select avg(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
         reviews = db.execute("select * from reviews where isbn=:isbn",{"isbn":isbn}).fetchall()
         if avgRating[0] is not None:
-            avgRating=float(avgRating)        
+            avgRating=float(avgRating[0])        
         if db.execute("select * from reviews where username=:username and isbn=:isbn",{"username":username,"isbn":isbn}).fetchone() is not None:
-            return render_template("book2.html",book = book,rating = avgRating,reviews = reviews)
+            return render_template("book2.html",book=book,rating=avgRating,reviews=reviews)
         db.execute("insert into reviews (username,isbn,rating,review) values (:username,:isbn,:rating,:review)",{"username":username, "isbn":isbn, "rating":userRating, "review":userReview})
         db.commit() 
 
@@ -114,7 +114,7 @@ def book(isbn):
     reviews = db.execute("select * from reviews where isbn=:isbn",{"isbn":isbn}).fetchall()
 
     if avgRating[0] is not None:
-        avgRating = float(avgRating)
+        avgRating = float(avgRating[0])
 
     if "username" not in session:
         return render_template("book1.html",book=book,rating=avgRating,reviews=reviews)
@@ -138,12 +138,12 @@ def api(isbn):
         return jsonify({"error": "Invalid"}), 404    
     numOfReviews=db.execute("select count(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
     if numOfReviews[0] is not None:
-        numOfReviews = int(numOfReviews) 
+        numOfReviews = int(numOfReviews[0]) 
     else:
         numOfReviews = 0
     avgRating=db.execute("select avg(rating) from reviews where isbn=:isbn",{"isbn":isbn}).fetchone()
     if avgRating[0] is not None:
-        avgRating = float(avgRating)
+        avgRating = float(avgRating[0])
     return jsonify({
         "isbn": book.isbn,
         "title": book.title,
