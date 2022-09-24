@@ -36,6 +36,34 @@ def search1():
         session.pop("username")
     return redirect(url_for('search'))
 
+@app.route("/register",methods=["POST"])
+def register():
+    username = request.form.get("username", default=None)
+    password = request.form.get("password", default=None)
+
+    if (username is None) or (password is None):
+        return render_template("error.html",message="Username and Password should not be blank")
+
+    usersWithSelectedUsername = db.execute("select * from users where username=:username",{"username":username}).fetchall()
+    if len(usersWithSelectedUsername) != 0:
+        return render_template("error.html",message="Username already exists")
+
+    name = request.form.get("name", default=None)
+    age = request.form.get("age", default=None)
+    phone = request.form.get("phone", default=None)
+
+    if name is None:
+        return render_template("error.html",message="Name should not be blank")
+    if age is None:
+        return render_template("error.html",message="Age should not be blank")
+    if phone is None:
+        return render_template("error.html",message="Phone number should not be blank")
+
+    db.execute("insert into users (name,age,phone,username,password) values (:name,:age,:phone,:username,:password)",{"name":name,"age":age,"phone":phone,"username":username,"password":password}) 
+    db.commit()   
+    session["username"] = username
+    return render_template("search.html",loggedIn=1)
+
 @app.route("/search",methods=["GET","POST"])
 def search():
     if request.method == "GET":
@@ -49,29 +77,10 @@ def search():
         if (username is None) or (password is None):
             return render_template("error.html",message="Username and Password should not be blank")
 
-        if "name" in request.form:
-            usersWithSelectedUsername = db.execute("select * from users where username=:username",{"username":username}).fetchall()
-            if len(usersWithSelectedUsername) != 0:
-                return render_template("error.html",message="Username already exists")
-            name = request.form.get("name")
-            age = request.form.get("age")
-            phone = request.form.get("phone")
-
-            if name is None:
-                return render_template("error.html",message="Name should not be blank")
-            if age is None:
-                return render_template("error.html",message="Age should not be blank")
-            if phone is None:
-                return render_template("error.html",message="Phone number should not be blank")        
-
-            db.execute("insert into users (name,age,phone,username,password) values (:name,:age,:phone,:username,:password)",{"name":name,"age":age,"phone":phone,"username":username,"password":password}) 
-            db.commit()   
-            session["username"] = username
-        else:
-            user = db.execute("select * from users where username=:username and password=:password",{"username":username,"password":password}).fetchall()
-            if len(user) == 0:
-                return render_template("error.html",message="wrong username or password")
-            session["username"] = username
+        user = db.execute("select * from users where username=:username and password=:password",{"username":username,"password":password}).fetchall()
+        if len(user) == 0:
+            return render_template("error.html",message="Wrong username or password")
+        session["username"] = username
     return render_template("search.html",loggedIn=1)
 
 
