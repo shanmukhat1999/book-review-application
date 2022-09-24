@@ -37,14 +37,14 @@
             </tbody>
         </table>
         <hr>
-        <h2>You have already provided feedback for this book</h2>
+        <h5>You have already provided feedback for this book</h5>
         <hr>
         <div>
-            <h3>Reviews:</h3>
+            <h5>Reviews:</h5>
             {% if reviews %}
             {% for i in reviews %}
             {% if (i.review)|length > 0 %}
-            <li><b>{{i.username}}</b>  ->  {{i.review}}</li>
+            <li><b>{{i.username}}</b>  :  {{i.review}}</li>
             {% endif %}
             {% endfor %}
             {% endif %}
