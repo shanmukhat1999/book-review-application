@@ -38,10 +38,12 @@ def search1():
 
 @app.route("/register",methods=["POST"])
 def register():
+    if "username" in session:
+        session.pop("username")
     username = request.form.get("username", default=None)
     password = request.form.get("password", default=None)
 
-    if (username is None) or (password is None):
+    if (username is None) or (username is "") or (password is None) or (password is ""):
         return render_template("error.html",message="Username and Password should not be blank")
 
     usersWithSelectedUsername = db.execute("select * from users where username=:username",{"username":username}).fetchall()
@@ -52,11 +54,11 @@ def register():
     age = request.form.get("age", default=None)
     phone = request.form.get("phone", default=None)
 
-    if name is None:
+    if (name is None) or (name is ""):
         return render_template("error.html",message="Name should not be blank")
-    if age is None:
+    if (age is None) or (age is ""):
         return render_template("error.html",message="Age should not be blank")
-    if phone is None:
+    if (phone is None) or (phone is ""):
         return render_template("error.html",message="Phone number should not be blank")
 
     db.execute("insert into users (name,age,phone,username,password) values (:name,:age,:phone,:username,:password)",{"name":name,"age":age,"phone":phone,"username":username,"password":password}) 
@@ -71,6 +73,8 @@ def search():
             return render_template("search.html",loggedIn=1)
         return render_template("search.html",loggedIn=0)
     else:
+        if "username" in session:
+            session.pop("username")
         username = request.form.get("username")
         password = request.form.get("password")
 
