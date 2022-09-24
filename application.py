@@ -78,7 +78,7 @@ def search():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        if (username is None) or (password is None):
+        if (username is None) or (username is "") or (password is None) or (password is ""):
             return render_template("error.html",message="Username and Password should not be blank")
 
         user = db.execute("select * from users where username=:username and password=:password",{"username":username,"password":password}).fetchall()
